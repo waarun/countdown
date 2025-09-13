@@ -2,14 +2,14 @@ import os
 from datetime import datetime
 import tweepy
 
-# Load keys from environment (GitHub Actions secrets)
+# Load secrets from environment variables
 api_key = os.getenv("API_KEY")
 api_secret = os.getenv("API_SECRET")
 access_token = os.getenv("ACCESS_TOKEN")
 access_secret = os.getenv("ACCESS_SECRET")
-bearer_token = os.getenv("BEARER_TOKEN")  # <- add this in GitHub Secrets
+bearer_token = os.getenv("BEARER_TOKEN")
 
-# Create Tweepy client (v2)
+# Initialize Tweepy v2 client
 client = tweepy.Client(
     consumer_key=api_key,
     consumer_secret=api_secret,
@@ -18,14 +18,14 @@ client = tweepy.Client(
     bearer_token=bearer_token
 )
 
-# Target date for countdown
+# Define the target date for the countdown
 event_date = datetime(2025, 12, 31)
 days_left = (event_date - datetime.now()).days
 
-# Tweet content
+# Compose the tweet content
 tweet = f"⏳ Countdown: {days_left} days until New Year 2026! 🎉"
 
-# Post tweet
+# Post the tweet
 client.create_tweet(text=tweet)
 
 print("Tweet posted:", tweet)
