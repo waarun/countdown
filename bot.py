@@ -10,18 +10,12 @@ api_key = os.getenv("API_KEY")
 api_secret = os.getenv("API_SECRET")
 access_token = os.getenv("ACCESS_TOKEN")
 access_secret = os.getenv("ACCESS_SECRET")
-bearer_token = os.getenv("BEARER_TOKEN")
 
 # ================================
-# Initialize Tweepy client (v2)
+# Initialize Tweepy v1.1 API (for media uploads)
 # ================================
-client = tweepy.Client(
-    consumer_key=api_key,
-    consumer_secret=api_secret,
-    access_token=access_token,
-    access_token_secret=access_secret,
-    bearer_token=bearer_token
-)
+auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_secret)
+api = tweepy.API(auth)
 
 # ================================
 # Countdown Configuration
@@ -47,8 +41,8 @@ if days_left > 0:
     # ================================
     # Upload GIF and Post Tweet
     # ================================
-    media = client.upload_media("og.gif")
-    client.create_tweet(text=tweet_text, media_ids=[media.media_id])
+    media = api.media_upload("og.gif")  # v1.1 method
+    api.update_status(status=tweet_text, media_ids=[media.media_id])
 
     print("Tweet posted successfully with GIF:", tweet_text)
 
