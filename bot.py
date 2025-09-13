@@ -1,7 +1,6 @@
+from datetime import datetime
 import os
 import tweepy
-from datetime import datetime
-import requests
 
 # ================================
 # Load Twitter API keys from GitHub Secrets
@@ -10,41 +9,35 @@ api_key = os.getenv("API_KEY")
 api_secret = os.getenv("API_SECRET")
 access_token = os.getenv("ACCESS_TOKEN")
 access_secret = os.getenv("ACCESS_SECRET")
+bearer_token = os.getenv("BEARER_TOKEN")
 
 # ================================
-# Initialize Tweepy v1.1 API (for media uploads)
+# Initialize Tweepy v2 client (text-only tweets)
 # ================================
-auth = tweepy.OAuth1UserHandler(api_key, api_secret, access_token, access_secret)
-api = tweepy.API(auth)
+client = tweepy.Client(
+    consumer_key=api_key,
+    consumer_secret=api_secret,
+    access_token=access_token,
+    access_token_secret=access_secret,
+    bearer_token=bearer_token
+)
 
 # ================================
 # Countdown Configuration
 # ================================
 release_date = datetime(2025, 9, 25)  # Movie release date
-gif_url = "https://media4.giphy.com/media/v1.Y2lkPTc5MGI3NjExa2pucDJvNzh3cDFoeGZwbG1pb2R1bmw4Z20wcDlsNHNqdDE1MWZ5cCZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9Zw/WVCz7hhi1gRHUfr5Wf/giphy.gif"
-
-# ================================
-# Calculate days left
-# ================================
 days_left = (release_date - datetime.now()).days
 
+# ================================
+# Compose tweet text
+# ================================
 if days_left > 0:
-    tweet_text = f"⏳ {days_left} days left until #OG hits the screens! 🔥"
-
-    # ================================
-    # Download GIF
-    # ================================
-    response = requests.get(gif_url)
-    with open("og.gif", "wb") as f:
-        f.write(response.content)
-
-    # ================================
-    # Upload GIF and Post Tweet
-    # ================================
-    media = api.media_upload("og.gif")  # v1.1 method
-    api.update_status(status=tweet_text, media_ids=[media.media_id])
-
-    print("Tweet posted successfully with GIF:", tweet_text)
-
+    tweet_text = f"{days_left}"
 else:
-    print("The movie is already released or today is the release date!")
+    tweet_text = "Firestorm Unleashed"
+
+# ================================
+# Post tweet
+# ================================
+client.create_tweet(text=tweet_text)
+print("Tweet posted:", tweet_text)
